@@ -1,2 +1,4 @@
+# ignore .idea project settings
+.idea/
 # ignore local copy of bootstrap
 bootstrap/
