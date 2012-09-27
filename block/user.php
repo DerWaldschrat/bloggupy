@@ -12,8 +12,6 @@ if (!(isset($_SESSION["__init"]))) {
     }
 }
 
-// For early development purposes, set session values to always loggedin
-$_SESSION["user"] = array("loggedin" => true, "rights" => 10);
 function isLoggedin($required = 0) {
     return isset($_SESSION["user"]["loggedin"]) && $_SESSION["user"]["loggedin"] === true && $_SESSION["user"]["rights"] >= $required;
 }
