@@ -19,14 +19,14 @@
 
             </div>
             <div id="content" class="span9">
-                <form id="inputForm" action="#">
+                <form id="loginForm" action="#">
                     <fieldset class="control-group">
                         <legend>Einloggen</legend>
                         <label for="name">Name:</label><input type="text" name="name" id="name" autofocus="on" />
                         <label for="password">Passwort:</label><input type="password" name="password" id="password" />
                     </fieldset>
                     <fieldset class="control-group buttonAndMessage">
-                        <button type="submit" class="btn" disabled="disabled">Einloggen</button>
+                        <button type="submit" class="btn" disabled="disabled" id="submitLogin">Einloggen</button>
                         <div class="statusField"></div>
                     </fieldset>
                 </form>
@@ -35,6 +35,7 @@
         <script>
             // Config stealJS
             var steal = {env: "production"}
+            <?php if (isLoggedin()): ?>window.USER = <?php echo json_encode($_SESSION["user"]);endif; ?>
         </script>
         <script src="<?php echo CLIENTROOT; ?>assets/vendor/steal/steal.js">
         </script>
@@ -42,7 +43,9 @@
             // Set root
             steal.rootUrl("<?php echo CLIENTROOT; ?>")
             // Init page
-            steal("assets/app")
+            steal("assets/app").then(function () {
+                App.init()
+            })
         </script>
     </body>
 </html>
