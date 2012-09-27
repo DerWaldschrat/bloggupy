@@ -12,6 +12,9 @@ define("CLIENTROOT", /*CLIENTROOT*/"../"/*/CLIENTROOT*/);
 // PHP extension
 define("PHP", ".php");
 
+// Require user management
+require ROOT . "block/user" . PHP;
+
 // Require backend template
 require ROOT . "theme/backend/index" . PHP;
 ?>
