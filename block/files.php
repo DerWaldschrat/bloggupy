@@ -5,7 +5,7 @@ defined("__EXEC") or exit;
 // Creates gzipped file
 function gz_file_put_contents($file, &$data)
 {
-    $fp = gzopen($file, "w9");
+    $fp = gzopen($file, "w4");
     gzwrite($fp, $data);
     gzclose($fp);
 }
