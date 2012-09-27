@@ -9,6 +9,7 @@ define("ROOT", "../");
  * "../".(strpos($_SERVER['HTTP_ACCEPT_ENCODING'], "gzip") !== false ? "gz/" : "")
  */
 define("CLIENTROOT", /*CLIENTROOT*/"../"/*/CLIENTROOT*/);
+define("APIROOT", "http://localhost/bloggupy/Api/");
 // PHP extension
 define("PHP", ".php");
 
