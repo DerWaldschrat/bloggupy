@@ -40,6 +40,7 @@
         <script src="<?php echo CLIENTROOT; ?>assets/vendor/steal/steal.js">
         </script>
         <script>
+            window.API = "<?php echo APIROOT; ?>"
             // Set root
             steal.rootUrl("<?php echo CLIENTROOT; ?>")
             // Init page
