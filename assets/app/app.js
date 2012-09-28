@@ -8,6 +8,9 @@ steal("assets/vendor/jquery", "assets/vendor/lodash").then("assets/vendor/backbo
         Views: {},
         Mixins: {},
         App: {
+            // Stores the active view
+            view: null,
+            $main: $("#content"),
             init: function () {
                 if (false && window.USER && window.USER.loggedin === true) {
                     this.login()
@@ -18,9 +21,17 @@ steal("assets/vendor/jquery", "assets/vendor/lodash").then("assets/vendor/backbo
                 }
             },
             login: function () {
-                //$("#loginForm").remove();
+
             },
-            setView: function () {
+            setView: function (view) {
+                // Removes old view
+                if (this.view instanceof Backbone.View) {
+                    this.view.remove()
+                }
+                // Set new view
+                this.view = view
+                // ..and render it
+                this.$main.append(this.view.render().el)
 
             },
             apiUrl: function (api) {
@@ -35,7 +46,7 @@ steal("assets/vendor/jquery", "assets/vendor/lodash").then("assets/vendor/backbo
         initialize: function () {
 
         },
-        urlRoot: Bloggupy.App.apiUrl("User/")
+        urlRoot: Bloggupy.App.apiUrl("User/me/")
     })
 
     // The login screen
@@ -44,14 +55,28 @@ steal("assets/vendor/jquery", "assets/vendor/lodash").then("assets/vendor/backbo
             "submit": function (event) {
                 // Do not submit loginform
                 event.preventDefault()
-                alert("Relight my fire")
                 new Bloggupy.Models.User({
-                }).save()
+                    name: this.$("#name").val(),
+                    password: this.$("#password").val()
+                }).on("sync", this.login, this).on("error", this.error, this).save()
             }
         },
         initialize: function () {
-            // Show login button
+        },
+        render: function () {
             this.$("#submitLogin").prop("disabled", false)
+            return this
+        },
+        login: function () {
+
+        },
+        error: function () {
+            this.$("input").val("")
+            this.message("loginFail")
+        },
+        // TODO: modularize messages
+        readMessage: function (message) {
+            return "Login fehlgeschlagen! Bitte probiere es erneut!"
         }
     })
 
