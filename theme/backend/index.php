@@ -27,7 +27,7 @@
                     </fieldset>
                     <fieldset class="control-group buttonAndMessage">
                         <button type="submit" class="btn" disabled="disabled" id="submitLogin">Einloggen</button>
-                        <div class="statusField"></div>
+                        <div class="statusField help-block"></div>
                     </fieldset>
                 </form>
             </div>
