@@ -1,6 +1,6 @@
 <?php
 define("__EXEC", true);
-define("ROOT", "../../");
+define("ROOT", "../../../");
 define("PHP", ".php");
 require ROOT . "block/user" . PHP;
 require ROOT . "block/mapper" . PHP;

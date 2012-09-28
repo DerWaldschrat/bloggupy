@@ -11,8 +11,10 @@ steal("assets/vendor/jquery", "assets/vendor/lodash").then("assets/vendor/backbo
             // Stores the active view
             view: null,
             $main: $("#content"),
+            // Stores the router
+            router: null,
             init: function () {
-                if (false && window.USER && window.USER.loggedin === true) {
+                if (window.USER && window.USER.loggedin === true) {
                     this.login()
                 } else {
                     this.setView(new Bloggupy.Views.LoginView({
@@ -21,7 +23,9 @@ steal("assets/vendor/jquery", "assets/vendor/lodash").then("assets/vendor/backbo
                 }
             },
             login: function () {
-
+                this.router = new Bloggupy.Router()
+                // Start history
+                Backbone.history.start()
             },
             setView: function (view) {
                 // Removes old view
@@ -40,6 +44,30 @@ steal("assets/vendor/jquery", "assets/vendor/lodash").then("assets/vendor/backbo
         }
     }
 
+    /**
+     *
+     * @class Bloggupy.Router
+     */
+    Bloggupy.Router = Backbone.Router.extend({
+        routes: {
+            // Simply logs the user out
+            "logout": function () {
+                App.user.destroy({
+                    error: function () {
+                        // TODO: better display method
+                        alert("Du konntest nicht ausgeloggt werden!")
+                    },
+                    success: function () {
+                        alert("Du wurdest ausgeloggt!")
+                        location.reload()
+                    }
+                })
+            },
+            "": function () {
+                App.setView(new Bloggupy.Views.Dashboard())
+            }
+        }
+    })
 
 
     Bloggupy.Models.User = Backbone.Model.extend({
@@ -68,7 +96,8 @@ steal("assets/vendor/jquery", "assets/vendor/lodash").then("assets/vendor/backbo
             return this
         },
         login: function () {
-
+            // Call app login function
+            Bloggupy.App.login()
         },
         error: function () {
             this.$("input").val("")
@@ -77,6 +106,15 @@ steal("assets/vendor/jquery", "assets/vendor/lodash").then("assets/vendor/backbo
         // TODO: modularize messages
         readMessage: function (message) {
             return "Login fehlgeschlagen! Bitte probiere es erneut!"
+        }
+    })
+    // The start page for every login
+    Bloggupy.Views.Dashboard = Backbone.View.extend({
+        initialize: function () {
+
+        },
+        render: function () {
+            this.$el.html("<h1>Dashboard</h1><a href='#logout'>Ausloggen</a>")
         }
     })
 
