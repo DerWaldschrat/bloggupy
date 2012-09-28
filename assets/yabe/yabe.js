@@ -46,7 +46,7 @@
 
 
     // Add more functionality to Backbone.View
-    _.extend(Backbone.View, {
+    _.extend(Backbone.View.prototype, {
         // Used for adding views to remove list
         setSubviewStore: function () {
             this._subviewList || (this._subviewList = []);
