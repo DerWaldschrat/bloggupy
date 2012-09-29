@@ -1,6 +1,6 @@
 // This file is for loading the backend app
 
-steal("assets/vendor/jquery", "assets/vendor/lodash").then("assets/vendor/backbone", "theme/backend").then("assets/yabe").then(function () {
+steal("assets/vendor/jquery", "assets/vendor/lodash").then("assets/vendor/backbone", "theme/backend", "assets/collections").then("assets/yabe").then(function () {
     // Create app namespace
     var Bloggupy = {
         Models: {},
@@ -16,21 +16,34 @@ steal("assets/vendor/jquery", "assets/vendor/lodash").then("assets/vendor/backbo
             router: null,
             // Store the active user
             user: null,
-            init: function () {
+            // Directly invoked after declaration
+            preload: function () {
                 // Create router
                 this.router = new Bloggupy.Router()
                 // Create navbar view
                 this.navbar = new Bloggupy.Views.NavbarController({
                     el: this.$navbar[0],
-                    router: this.router
+                    router: this.router,
+                    delayed: true
                 })
+            },
+            init: function () {
+                // Define links
                 this.navbar.push({
-                    uri: "logout",
-                    text: "Ausloggen"
-                }, {
+                    uri: "header",
+                    id: "mainheader",
+                    text: "Test"
+                },{
                     uri: "dashboard",
                     text: "Dashboard"
-                })
+
+                }, { // Spacer between dashboard and logout
+                    uri: "spacer",
+                    id: "logoutSpacer"
+                },{
+                    uri: "logout",
+                    text: "Logout"
+                }).start()
                 // Start history
                 Backbone.history.start()
             },
@@ -174,16 +187,25 @@ steal("assets/vendor/jquery", "assets/vendor/lodash").then("assets/vendor/backbo
         },
         initialize: function (options) {
             // Stores every single link
-            this.items = {}
+            this.items = new collections.LinkedHashMap()
             this.router = options.router
+            this.delayed = this.options.delayed || false
         },
-        singleNavItem: Tpl.singleNavItem,
+        singleItem: Tpl.nav.item,
+        header: Tpl.nav.header,
+        spacer: Tpl.nav.spacer,
         render: function () {
             var html = ""
-                , i, curr
-            for (i in this.items) {
-                curr = this.items[i]
-                html += this.singleNavItem(curr.uri, curr.text, curr.title)
+                , i = 0, values = this.items.values(), len = values.length, curr
+            for (; i < len; i++) {
+                curr = values[i]
+                if (curr.uri == "header") {
+                    html += this.header(curr.text, curr.title)
+                } else if (curr.uri == "spacer") {
+                    html += this.spacer()
+                } else {
+                    html += this.singleItem(curr.uri, curr.text, curr.title)
+                }
             }
             this.$el.html(html)
             return this
@@ -193,29 +215,41 @@ steal("assets/vendor/jquery", "assets/vendor/lodash").then("assets/vendor/backbo
             if (obj && typeof obj === 'object' && !_.isString(obj)) {
                 for (var i = 0, len = arguments.length, curr; i < len; i++) {
                     curr = arguments[i]
-                    this._push.call(this, curr.uri, curr.text, curr.title)
+                    // You can leave out the id if you use objects
+                    if (!curr.id) {
+                        curr.id = curr.uri
+                    }
+                    this._push.call(this, curr.id, curr.uri, curr.text, curr.title)
                 }
             } else {
                 this._push.apply(this, arguments)
             }
             // Navbar is so small that we can completely rerender it
-            return this.render()
+            return this.delayed ? this : this.render()
         },
-        _push: function (uri, text, title) {
-            this.items[uri] = {
+        _push: function (id, uri, text, title) {
+            this.items.put(id, {
                 uri: uri,
                 text: text,
                 title: title
-            }
+            })
         },
         unlink: function (uri) {
             for (var i = 0, len = arguments.length, curr; i < len; i++) {
                 curr = arguments[i]
                 this.items[curr] && delete this.items[curr]
             }
+            return this.delayed ? this : this.render()
+        },
+        // Start when delayed
+        start: function () {
+            this.delayed = false
             return this.render()
         }
     })
+
+    // Invoke preload
+    Bloggupy.App.preload()
 
     // Map over to global
     window.Bloggupy = Bloggupy

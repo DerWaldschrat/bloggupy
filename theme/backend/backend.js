@@ -24,9 +24,18 @@ if (typeof Tpl === 'undefined') {
             var html = ""
             return html
         },
-        singleNavItem: function (uri, text, title) {
-            title || (title = text)
-            return "<li><a href='" + uri + "' title='" + title + "'>" + text + "</a></li>"
+        nav: {
+            item: function (uri, text, title) {
+                title || (title = text)
+                return "<li><a href='" + uri + "' title='" + title + "'>" + text + "</a></li>"
+            },
+            header: function (text, title) {
+                title || (title = text)
+                return "<li title='" + title + "' class='nav-header'>"+ text +"</li>"
+            },
+            spacer: function () {
+                return "<li class='divider'></li>"
+            }
         }
     })
 }).call(this, Tpl)
