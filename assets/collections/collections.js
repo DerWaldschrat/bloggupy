@@ -249,7 +249,10 @@
         return values;
     };
 
-
+    this.collections = {
+        HashMap: HashMap,
+        LinkedHashMap: LinkedHashMap
+    }
 
 
 }).call(this)
