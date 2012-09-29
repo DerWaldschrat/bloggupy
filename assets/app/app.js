@@ -13,19 +13,20 @@ steal("assets/vendor/jquery", "assets/vendor/lodash").then("assets/vendor/backbo
             $main: $("#content"),
             // Stores the router
             router: null,
+            // Store the active user
+            user: null,
             init: function () {
-                if (window.USER && window.USER.loggedin === true) {
-                    this.login()
-                } else {
-                    this.setView(new Bloggupy.Views.LoginView({
-                        el: $("#loginForm")[0]
-                    }))
-                }
-            },
-            login: function () {
+                // Create router
                 this.router = new Bloggupy.Router()
                 // Start history
                 Backbone.history.start()
+            },
+            login: function (user) {
+                this.user = user
+                // Navigate to dashboard
+                this.router.navigate("dashboard", {
+                    trigger: true
+                })
             },
             setView: function (view) {
                 // Removes old view
@@ -40,6 +41,17 @@ steal("assets/vendor/jquery", "assets/vendor/lodash").then("assets/vendor/backbo
             },
             apiUrl: function (api) {
                 return API + api
+            },
+            logout: function () {
+                // Remove all events from user
+                this.user.off()
+                // Clear reference
+                this.user = null
+                console.log(window.USER)
+                // Go to home screen
+                this.router.navigate("init", {
+                    trigger: true
+                })
             }
         }
     }
@@ -51,21 +63,35 @@ steal("assets/vendor/jquery", "assets/vendor/lodash").then("assets/vendor/backbo
     Bloggupy.Router = Backbone.Router.extend({
         routes: {
             // Simply logs the user out
-            "logout": function () {
-                App.user.destroy({
-                    error: function () {
-                        // TODO: better display method
-                        alert("Du konntest nicht ausgeloggt werden!")
-                    },
-                    success: function () {
-                        alert("Du wurdest ausgeloggt!")
-                        location.reload()
-                    }
-                })
-            },
-            "": function () {
-                App.setView(new Bloggupy.Views.Dashboard())
+            "logout": "logout",
+            // The main screen after logging in
+            "dashboard": "dashboard",
+            // Empty route as an alias for init
+            "": "init",
+            "init": "init"
+        },
+        logout: function () {
+            App.user.destroy({
+                error: function () {
+                    // TODO: better display method
+                    alert("Du konntest nicht ausgeloggt werden!")
+                },
+                success: function () {
+                    App.logout()
+                }
+            })
+        },
+        dashboard: function () {
+            App.setView(new Bloggupy.Views.Dashboard())
+        },
+        init: function () {
+            if (window.USER && window.USER.loggedin === true) {
+                App.login(new Bloggupy.Models.User(window.USER))
+                // Delete user
+                delete window.USER
+                return
             }
+            App.setView(new Bloggupy.Views.LoginView)
         }
     })
 
@@ -80,24 +106,36 @@ steal("assets/vendor/jquery", "assets/vendor/lodash").then("assets/vendor/backbo
     // The login screen
     Bloggupy.Views.LoginView = Backbone.View.extend({
         events: {
-            "submit": function (event) {
+            "submit form": function (event) {
                 // Do not submit loginform
                 event.preventDefault()
-                new Bloggupy.Models.User({
+                // Create user model
+                this.model = new Bloggupy.Models.User({
                     name: this.$("#name").val(),
                     password: this.$("#password").val()
-                }).on("sync", this.login, this).on("error", this.error, this).save()
+                }).on("sync", this.login, this).on("error", this.error, this)
+                // Save user to check data
+                this.model.save()
             }
         },
         initialize: function () {
         },
         render: function () {
-            this.$("#submitLogin").prop("disabled", false)
+            this.$el.html('<form id="loginForm" action="#">'+
+                '<fieldset class="control-group">' +
+                    '<legend>Einloggen</legend>'+
+                    '<label for="name">Name:</label><input type="text" name="name" id="name" autofocus="on" />' +
+                    '<label for="password">Passwort:</label><input type="password" name="password" id="password" />' +
+                '</fieldset>' +
+                '<fieldset class="control-group buttonAndMessage">' +
+                    '<button type="submit" class="btn" id="submitLogin">Einloggen</button>' +
+                    '<div class="statusField help-block"></div>' +
+                '</fieldset>' +
+                '</form>')
             return this
         },
         login: function () {
-            // Call app login function
-            Bloggupy.App.login()
+            Bloggupy.App.login(this.model)
         },
         error: function () {
             this.$("input").val("")
@@ -115,6 +153,7 @@ steal("assets/vendor/jquery", "assets/vendor/lodash").then("assets/vendor/backbo
         },
         render: function () {
             this.$el.html("<h1>Dashboard</h1><a href='#logout'>Ausloggen</a>")
+            return this
         }
     })
 
