@@ -23,6 +23,10 @@ if (typeof Tpl === 'undefined') {
         dashboard: function () {
             var html = ""
             return html
+        },
+        singleNavItem: function (uri, text, title) {
+            title || (title = text)
+            return "<li><a href='" + uri + "' title='" + title + "'>" + text + "</a></li>"
         }
     })
 }).call(this, Tpl)

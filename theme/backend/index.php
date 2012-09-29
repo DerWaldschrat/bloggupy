@@ -16,7 +16,9 @@
         </div>
         <div id="main" class="row-fluid">
             <div id="navbarLeft" class="span3">
+                <ul id="navbar" class="nav nav-list well">
 
+                </ul>
             </div>
             <div id="content" class="span9">
             </div>

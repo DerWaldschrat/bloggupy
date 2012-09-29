@@ -11,6 +11,7 @@ steal("assets/vendor/jquery", "assets/vendor/lodash").then("assets/vendor/backbo
             // Stores the active view
             view: null,
             $main: $("#content"),
+            $navbar: $("#navbar"),
             // Stores the router
             router: null,
             // Store the active user
@@ -18,6 +19,18 @@ steal("assets/vendor/jquery", "assets/vendor/lodash").then("assets/vendor/backbo
             init: function () {
                 // Create router
                 this.router = new Bloggupy.Router()
+                // Create navbar view
+                this.navbar = new Bloggupy.Views.NavbarController({
+                    el: this.$navbar[0],
+                    router: this.router
+                })
+                this.navbar.push({
+                    uri: "logout",
+                    text: "Ausloggen"
+                }, {
+                    uri: "dashboard",
+                    text: "Dashboard"
+                })
                 // Start history
                 Backbone.history.start()
             },
@@ -145,6 +158,62 @@ steal("assets/vendor/jquery", "assets/vendor/lodash").then("assets/vendor/backbo
         render: function () {
             this.$el.html(this.template())
             return this
+        }
+    })
+    // The view for the navbar
+    Bloggupy.Views.NavbarController = Backbone.View.extend({
+        events: {
+            "click a": "navigate"
+        },
+        // Triggered on every click on a navlink
+        navigate: function (event) {
+            event.preventDefault()
+            this.router.navigate($(event.target).attr("href"), {
+                trigger: true
+            })
+        },
+        initialize: function (options) {
+            // Stores every single link
+            this.items = {}
+            this.router = options.router
+        },
+        singleNavItem: Tpl.singleNavItem,
+        render: function () {
+            var html = ""
+                , i, curr
+            for (i in this.items) {
+                curr = this.items[i]
+                html += this.singleNavItem(curr.uri, curr.text, curr.title)
+            }
+            this.$el.html(html)
+            return this
+        },
+        push: function (obj) {
+            // Do we have multiple objects?
+            if (obj && typeof obj === 'object' && !_.isString(obj)) {
+                for (var i = 0, len = arguments.length, curr; i < len; i++) {
+                    curr = arguments[i]
+                    this._push.call(this, curr.uri, curr.text, curr.title)
+                }
+            } else {
+                this._push.apply(this, arguments)
+            }
+            // Navbar is so small that we can completely rerender it
+            return this.render()
+        },
+        _push: function (uri, text, title) {
+            this.items[uri] = {
+                uri: uri,
+                text: text,
+                title: title
+            }
+        },
+        unlink: function (uri) {
+            for (var i = 0, len = arguments.length, curr; i < len; i++) {
+                curr = arguments[i]
+                this.items[curr] && delete this.items[curr]
+            }
+            return this.render()
         }
     })
 
