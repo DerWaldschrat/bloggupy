@@ -47,7 +47,6 @@ steal("assets/vendor/jquery", "assets/vendor/lodash").then("assets/vendor/backbo
                 this.user.off()
                 // Clear reference
                 this.user = null
-                console.log(window.USER)
                 // Go to home screen
                 this.router.navigate("init", {
                     trigger: true
@@ -120,18 +119,9 @@ steal("assets/vendor/jquery", "assets/vendor/lodash").then("assets/vendor/backbo
         },
         initialize: function () {
         },
+        loginForm: Tpl.loginForm,
         render: function () {
-            this.$el.html('<form id="loginForm" action="#">'+
-                '<fieldset class="control-group">' +
-                    '<legend>Einloggen</legend>'+
-                    '<label for="name">Name:</label><input type="text" name="name" id="name" autofocus="on" />' +
-                    '<label for="password">Passwort:</label><input type="password" name="password" id="password" />' +
-                '</fieldset>' +
-                '<fieldset class="control-group buttonAndMessage">' +
-                    '<button type="submit" class="btn" id="submitLogin">Einloggen</button>' +
-                    '<div class="statusField help-block"></div>' +
-                '</fieldset>' +
-                '</form>')
+            this.$el.html(this.loginForm())
             return this
         },
         login: function () {
@@ -151,8 +141,9 @@ steal("assets/vendor/jquery", "assets/vendor/lodash").then("assets/vendor/backbo
         initialize: function () {
 
         },
+        template: Tpl.dashboard,
         render: function () {
-            this.$el.html("<h1>Dashboard</h1><a href='#logout'>Ausloggen</a>")
+            this.$el.html(this.template())
             return this
         }
     })
