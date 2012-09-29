@@ -19,5 +19,9 @@ delete(function () {
     if (isset($_SESSION["user"])) {
         unset($_SESSION["user"]);
     }
+});
+// For debugging
+get(function () {
+    echo $_SERVER["QUERY_STRING"];
 })
 ?>
