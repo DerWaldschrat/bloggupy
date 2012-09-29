@@ -19,17 +19,6 @@
 
             </div>
             <div id="content" class="span9">
-                <form id="loginForm" action="#">
-                    <fieldset class="control-group">
-                        <legend>Einloggen</legend>
-                        <label for="name">Name:</label><input type="text" name="name" id="name" autofocus="on" />
-                        <label for="password">Passwort:</label><input type="password" name="password" id="password" />
-                    </fieldset>
-                    <fieldset class="control-group buttonAndMessage">
-                        <button type="submit" class="btn" disabled="disabled" id="submitLogin">Einloggen</button>
-                        <div class="statusField help-block"></div>
-                    </fieldset>
-                </form>
             </div>
         </div>
         <script>
