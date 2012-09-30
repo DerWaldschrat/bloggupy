@@ -25,30 +25,36 @@ steal("assets/vendor/jquery", "assets/vendor/lodash").then("assets/vendor/backbo
                     el: this.$navbar[0],
                     router: this.router,
                     delayed: true
-                })
-            },
-            init: function () {
-                // Define links
-                this.navbar.push({
-                    uri: "header",
-                    id: "mainheader",
-                    text: "Test"
-                },{
+                }).push({ // Insert link to dashboard
                     uri: "dashboard",
                     text: "Dashboard"
 
-                }, { // Spacer between dashboard and logout
+                })
+
+            },
+            init: function () {
+                // Define logout link
+                this.navbar.push({ // Spacer between main bar and logout screen
                     uri: "spacer",
                     id: "logoutSpacer"
                 },{
                     uri: "logout",
                     text: "Logout"
-                }).start()
+                })
                 // Start history
                 Backbone.history.start()
+                // If we are not on the startpage, navigate to startpage to trigger login
+                if (window.USER && window.USER.loggedin) {
+                    this.router.navigate("init", {
+                        trigger: true,
+                        replace: true
+                    })
+                }
             },
             login: function (user) {
                 this.user = user
+                // Start navbar
+                this.navbar.start()
                 // Navigate to dashboard
                 this.router.navigate("dashboard", {
                     trigger: true
@@ -74,9 +80,12 @@ steal("assets/vendor/jquery", "assets/vendor/lodash").then("assets/vendor/backbo
                 // Clear reference
                 this.user = null
                 // Go to home screen
+                this.navbar.stop()
                 this.router.navigate("init", {
-                    trigger: true
+                    trigger: true,
+                    replace: true
                 })
+
             }
         }
     }
@@ -189,7 +198,10 @@ steal("assets/vendor/jquery", "assets/vendor/lodash").then("assets/vendor/backbo
             // Stores every single link
             this.items = new collections.LinkedHashMap()
             this.router = options.router
-            this.delayed = this.options.delayed || false
+            // Hide if delayed
+            if (this.options.delayed) {
+                this.stop()
+            }
         },
         singleItem: Tpl.nav.item,
         header: Tpl.nav.header,
@@ -244,7 +256,14 @@ steal("assets/vendor/jquery", "assets/vendor/lodash").then("assets/vendor/backbo
         // Start when delayed
         start: function () {
             this.delayed = false
+            this.$el.show()
             return this.render()
+        },
+        // Stop again
+        stop: function () {
+            this.delayed = true
+            this.$el.hide()
+            return this
         }
     })
 
