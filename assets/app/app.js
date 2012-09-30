@@ -46,20 +46,14 @@ steal("assets/vendor/jquery", "assets/vendor/lodash").then("assets/vendor/backbo
                 Backbone.history.start()
                 // If we are not on the startpage, navigate to startpage to trigger login
                 if (window.USER && window.USER.loggedin) {
-                    this.router.navigate("init", {
-                        trigger: true,
-                        replace: true
-                    })
+                    App.login(new Bloggupy.Models.User(window.USER))
+                    delete window.USER
                 }
             },
             login: function (user) {
                 this.user = user
                 // Start navbar
                 this.navbar.start()
-                // Navigate to dashboard
-                this.router.navigate("dashboard", {
-                    trigger: true
-                })
             },
             setView: function (view) {
                 // Removes old view
@@ -108,7 +102,8 @@ steal("assets/vendor/jquery", "assets/vendor/lodash").then("assets/vendor/backbo
                 }
             },
             // Creates a new route which executes the file send in
-            makeNewRoute: function (name, route, file, fn) {
+            makeNewRoute: function (name, route, file, fn, forAll) {
+                var self = this
                 this.router.route(name, route, function () {
                     steal("assets/app/plugins/" + file).then(function () {
                         fn()
@@ -189,6 +184,9 @@ steal("assets/vendor/jquery", "assets/vendor/lodash").then("assets/vendor/backbo
         },
         login: function () {
             Bloggupy.App.login(this.model)
+            Bloggupy.App.router.navigate("dashboard", {
+                trigger: true
+            })
         },
         error: function () {
             this.$("input").val("")
@@ -299,11 +297,9 @@ steal("assets/vendor/jquery", "assets/vendor/lodash").then("assets/vendor/backbo
         }
     })
 
-    // Invoke preload
-    Bloggupy.App.preload()
-
     // Map over to global
     window.Bloggupy = Bloggupy
     window.App = Bloggupy.App
-
+    // Invoke preload
+    Bloggupy.App.preload()
 })
