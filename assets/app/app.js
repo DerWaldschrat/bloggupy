@@ -1,6 +1,6 @@
 // This file is for loading the backend app
 
-steal("assets/vendor/jquery", "assets/vendor/lodash").then("assets/vendor/backbone", "theme/backend", "assets/collections").then("assets/yabe").then(function () {
+steal("assets/vendor/jquery", "assets/vendor/lodash").then("assets/vendor/backbone", "theme/backend", "assets/collections").then("assets/yabe", "assets/app/pluginlist").then(function () {
     // Create app namespace
     var Bloggupy = {
         Models: {},
@@ -30,7 +30,8 @@ steal("assets/vendor/jquery", "assets/vendor/lodash").then("assets/vendor/backbo
                     text: "Dashboard"
 
                 })
-
+                // Init plugins
+                this.initPlugins()
             },
             init: function () {
                 // Define logout link
@@ -86,6 +87,27 @@ steal("assets/vendor/jquery", "assets/vendor/lodash").then("assets/vendor/backbo
                     replace: true
                 })
 
+            },
+            // Used to init all plugins
+            initPlugins: function () {
+                var i, curr, j, route
+                for (i in PLUGINS) {
+                    curr = PLUGINS[i]
+                    // Exec plugin preload function
+                    curr.exec(this)
+                    for (j in curr.routes) {
+                        route = curr.routes[j]
+                        this.makeNewRoute(route.route, route.route, j, route.afterLoad)
+                    }
+                }
+            },
+            // Creates a new route which executes the file send in
+            makeNewRoute: function (name, route, file, fn) {
+                this.router.route(name, route, function () {
+                    steal("assets/app/plugins/" + file).then(function () {
+                        fn()
+                    })
+                })
             }
         }
     }
@@ -180,6 +202,10 @@ steal("assets/vendor/jquery", "assets/vendor/lodash").then("assets/vendor/backbo
         render: function () {
             this.$el.html(this.template())
             return this
+        },
+        // Adds a widget to this dashboard
+        addWidget: function (widget) {
+
         }
     })
     // The view for the navbar
