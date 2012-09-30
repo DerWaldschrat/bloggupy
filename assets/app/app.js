@@ -90,15 +90,21 @@ steal("assets/vendor/jquery", "assets/vendor/lodash").then("assets/vendor/backbo
             },
             // Used to init all plugins
             initPlugins: function () {
-                var i, curr, j, route
+                var i, curr
                 for (i in PLUGINS) {
                     curr = PLUGINS[i]
-                    // Exec plugin preload function
-                    curr.exec(this)
-                    for (j in curr.routes) {
-                        route = curr.routes[j]
-                        this.makeNewRoute(route.route, route.route, j, route.afterLoad)
-                    }
+                    // Add plugin
+                    this._addPlugin(curr)
+                }
+            },
+            // Adds the plugins
+            _addPlugin: function (curr) {
+                var j, route
+                // Exec plugin preload function
+                curr.exec(this)
+                for (j in curr.routes) {
+                    route = curr.routes[j]
+                    this.makeNewRoute(route.route, route.route, j, route.afterLoad)
                 }
             },
             // Creates a new route which executes the file send in
