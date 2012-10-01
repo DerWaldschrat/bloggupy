@@ -40,18 +40,18 @@ if (typeof Tpl === 'undefined') {
         },
         // Templates for the entry plugin
         entry: {
-            create: function (title) {
+            create: function (title, model) {
                 return "<form action='#'>" +
                         "<fieldset class='control-group'>" +
                             "<legend>" + title + "</legend>" +
                             "<label for='entryTitle'>Titel</label>" +
-                            "<input type='text' id='entryTitle' name='entryTitle' />" +
+                            "<input type='text' id='entryTitle' name='entryTitle' value='" + (model.has("title") ? model.escape("title") : "") + "' />" +
                             "<label for='entryPermalink'>Permalink</label>" +
                             "<div class='input-append'>" +
-                                "<input type='text' id='entryPermalink' name='entryPermalink' /><span class='add-on' id='clearPermalink'><i class='icon-trash'></i></span>" +
+                                "<input type='text' id='entryPermalink' name='entryPermalink' value='" + (model.has("permalink") ? model.escape("permalink") : "") + "' /><span class='add-on' id='clearPermalink'><i class='icon-trash'></i></span>" +
                             "</div>" +
                             "<label for='entryContent'>Inhalt</label>" +
-                            "<textarea id='entryContent' name='entryContent' class='input-xxlarge' rows='10'></textarea>" +
+                            "<textarea id='entryContent' name='entryContent' class='input-xxlarge' rows='10'>" + (model.has("content") ? model.escape("content") : "") + "</textarea>" +
                         "</fieldset>" +
                         "<fieldset class='control-group buttonAndMessage'>" +
                             "<div class='btn-group'>" +
@@ -61,6 +61,9 @@ if (typeof Tpl === 'undefined') {
                             "<div class='help-block statusField'></div>" +
                         "</fieldset>" +
                     "</form>"
+            },
+            deleteButton: function () {
+                return "<button type='button' id='entryDelete' class='btn btn-danger'>Löschen</button>"
             }
         }
     })
