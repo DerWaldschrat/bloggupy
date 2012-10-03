@@ -105,8 +105,9 @@ steal("assets/vendor/jquery", "assets/vendor/lodash").then("assets/vendor/backbo
             makeNewRoute: function (name, route, file, fn, forAll) {
                 var self = this
                 this.router.route(name, route, function () {
+                    var args = arguments;
                     steal("assets/app/plugins/" + file).then(function () {
-                        fn()
+                        fn.apply(this, args)
                     })
                 })
             }
