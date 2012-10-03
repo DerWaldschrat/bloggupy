@@ -1,7 +1,13 @@
 // Contains some simple backbone extensions
 (function () {
     // Creates a singleton generator which is used when you want to load a collection only ones
-    Backbone.Singleton = function () {
+    /**
+     *
+     * @param defaults Contains the default fetch options
+     * @return {Function} the function to get the singleton
+     * @constructor Contains the singleton pattern
+     */
+    Backbone.Singleton = function (defaults) {
         var instance = null
         return function (events, scope, opts) {
             var i, fetch
@@ -15,7 +21,7 @@
                 instance.on(i, events[i], scope)
             }
             if (fetch) {
-                instance.fetch(opts)
+                instance.fetch(_.extend({}, defaults, opts))
             }
             return instance;
         }
