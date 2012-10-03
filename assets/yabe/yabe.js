@@ -74,5 +74,16 @@
         }
     })
 
+    // Provides some useful mixins
+    Backbone.Mixins = {
+        // Allows a collection to load more items depending on the amount loaded
+        // requires urlRoot to be set
+        LazyCollection: {
+            url: function () {
+                return _.result(this, "urlRoot") + "?from=" + this.length;
+            }
+        }
+    }
+
 
 }).call(this)
