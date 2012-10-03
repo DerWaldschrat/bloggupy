@@ -18,6 +18,10 @@ window.PLUGINS = {
                 uri: "entry/create",
                 text: "Neuer Eintrag",
                 title: "Schreibe einen neuen Blogeintrag"
+            }, {
+                uri: "entry/list",
+                text: "Alle Einträge anzeigen",
+                title: "Schaue alle Einträge an, bearbeite sie und lösche sie"
             })
         },
         // Contains all routes
@@ -26,6 +30,12 @@ window.PLUGINS = {
                 route: "entry/create(/:id)",
                 afterLoad: function () {
                     App.setView(new Bloggupy.Views.EditBlogEntryView())
+                }
+            },
+            "entry/list": {
+                route: "entry/list",
+                afterLoad: function () {
+
                 }
             }
         },

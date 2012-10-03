@@ -84,13 +84,14 @@ steal("assets/app/plugins/entry/models").then(function () {
         },
         destroyed: function () {
             console.log("destroySync")
-            this.message("destroySucceed", true)
             this.model.off()
             this.model = null
             // Re-initialize view
             this.initialize()
             // Re-render
             this.render()
+            this.message("destroySucceed", true)
+
         },
         saved: function () {
             console.log("saveSync")
