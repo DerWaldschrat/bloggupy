@@ -34,7 +34,7 @@ if (isLoggedin(10)) {
         }
     });
     get(function () {
-
+        hJSON(array());
     });
     // If new entry is created
     post(function () {
