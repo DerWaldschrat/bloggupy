@@ -69,6 +69,9 @@ steal("assets/app/plugins/entry/models").then(function () {
         },
         saveModel: function (status) {
             this.model.save({
+                content: this.$("#entryContent").val(),
+                title: this.$("#entryTitle").val(),
+                permalink: this.$("#entryPermalink").val(),
                 published: status
             })
         },

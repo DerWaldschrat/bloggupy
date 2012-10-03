@@ -16,7 +16,7 @@
 
     // Add lazyloading mixin to this collection
     _.extend(Bloggupy.Collections.BlogEntries.prototype, Backbone.Mixins.LazyCollection);
-    // Add singleton behaviour
+    // Add singleton behaviour with default adding of fetched models
     Bloggupy.Collections.BlogEntries.instance = Backbone.Singleton({
         add: true
     })
