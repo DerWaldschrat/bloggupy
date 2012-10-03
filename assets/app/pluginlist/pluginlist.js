@@ -23,7 +23,7 @@ window.PLUGINS = {
         // Contains all routes
         routes: {
             "entry/create": {
-                route: "entry/create",
+                route: "entry/create(/:id)",
                 afterLoad: function () {
                     App.setView(new Bloggupy.Views.EditBlogEntryView())
                 }
