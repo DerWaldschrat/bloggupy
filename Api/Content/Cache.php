@@ -8,6 +8,12 @@
  */
 class Cache {
     /**
+     * @param $body stdClass | null The data of this cache object
+     */
+    function __construct ($body) {
+        $this->body = $body;
+    }
+    /**
      * @return array All entries connected to this entry
      */
     function resolveAllInvolvedFiles()
@@ -29,8 +35,10 @@ class Cache {
         return true;
     }
 
+    /**
+     * @param $action string Which action should be performed
+     */
     function perform($action) {
-
     }
 }
 ?>

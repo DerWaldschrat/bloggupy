@@ -20,27 +20,61 @@ if (isLoggedin(10)) {
     $cacheBody = null;
     $cacheAction = "update";
     delete(function () {
-
+        global $shouldUpdateCache, $cacheBody;
+        $id = $_SERVER["QUERY_STRING"];
+        $db = db();
+        $st = $db->prepare("DELETE FROM " . CONTENT . " WHERE contentid = ?");
+        $st->bind_param("i", $id);
+        if (exQuery($st)) {
+            $shouldUpdateCache = true;
+            $cacheBody = new stdClass();
+            $cacheBody->contentid = $id;
+        } else {
+            fail("contentDeleteFail");
+        }
     });
     get(function () {
 
     });
     // If new entry is created
     post(function () {
-
+        global $shouldUpdateCache, $cacheBody;
+        $body = bodyAsJSON();
+        if (hasAllSetIsset($body, array("title", "permalink", "content", "published"))) {
+            $db = db();
+            $response = new stdClass();
+            $response->created = $response->updated = $body->created = $body->updated = dateForDatabase();
+            $response->author = $body->author = dateForDatabase();
+            $st = $db->prepare("INSERT INTO " . CONTENT . " (title, permalink, content, published, created, updated, author) VALUES(?, ?, ?, ?, ?, ?, ?)");
+            $st->bind_param("sssssss", $body->title, $body->permalink, $body->content, $body->published, $body->created, $body->updated, $body->author);
+            if (exQuery($st)) {
+                $response->contentid = $body->contentid = $db->insert_id;
+                hJSON($response);
+                if ($body->published >= 2) {
+                    $shouldUpdateCache = true;
+                    $cacheBody = $body;
+                }
+            } else {
+                fail("contentCreateFail");
+            }
+        } else {
+            fail("contentCreateFail");
+        }
     });
     // If entry is updated
     put(function () {
         global $shouldUpdateCache, $cacheBody;
         $body = bodyAsJSON();
         $id = $_SERVER["QUERY_STRING"];
-        if (hasAllSet($body, array("contentid", "title", "permalink", "content", "published", "created")) && $id == $body->contentid) {
+        if (hasAllSetIsset($body, array("contentid", "title", "permalink", "content", "published", "created")) && $id == $body->contentid) {
             $db = db();
             $response = new stdClass();
-            $st = $db->prepare("UPDATE " . CONTENT . " SET title = ?, permalink = ?, content = ?, published = ?, updated = ? WHERE contentid = ?");
+            $st = $db->prepare("UPDATE " . CONTENT . " SET title = ?, permalink = ?, content = ?, published = ?, updated = ?, author = ? WHERE contentid = ?");
             $response->updated = $body->updated = dateForDatabase();
-            $st->bind_param("sssssi", $body->title, $body->permalink, $body->content, $body->published, $body->updated, $body->contentid);
+            $body->author = userField("id");
+            $st->bind_param("ssssssi", $body->title, $body->permalink, $body->content, $body->published, $body->updated, $body->author, $body->contentid);
             if (exQuery($st)) {
+                hJSON($response);
                 if ($body->published >= 2) {
                     $shouldUpdateCache = true;
                     $cacheBody = $body;
@@ -52,6 +86,7 @@ if (isLoggedin(10)) {
             fail("contentUpdateFail");
         }
     });
+
     // Should the cache be updated
     if ($shouldUpdateCache) {
         require "Cache" . PHP;

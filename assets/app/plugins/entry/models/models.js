@@ -5,7 +5,8 @@
      * A single BlogEntry instance
      */
     Bloggupy.Models.BlogEntry = Backbone.Model.extend({
-        urlRoot: blogEntryRoute
+        urlRoot: blogEntryRoute,
+        idAttribute: "contentid"
     })
 
     Bloggupy.Collections.BlogEntries = Backbone.Collection.extend({

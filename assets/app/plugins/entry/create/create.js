@@ -85,11 +85,12 @@ steal("assets/app/plugins/entry/models").then(function () {
         destroyed: function () {
             console.log("destroySync")
             this.message("destroySucceed", true)
-            this.$("input[type='text'], textarea").val("")
             this.model.off()
             this.model = null
             // Re-initialize view
             this.initialize()
+            // Re-render
+            this.render()
         },
         saved: function () {
             console.log("saveSync")
