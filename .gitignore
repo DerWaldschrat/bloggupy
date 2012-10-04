@@ -2,3 +2,7 @@
 .idea/
 # ignore local copy of bootstrap
 bootstrap-remote/
+# ignore cache
+cache/
+# do not ignore .htaccess in cache dir
+!cache/.htaccess
