@@ -11,3 +11,4 @@ CREATE TABLE bl_content (
 );
 -- Add index to content table
 ALTER TABLE `bl_content` ADD INDEX `updated` ( `updated` );
+ALTER TABLE `bl_content` ADD INDEX `created` ( `created` );
