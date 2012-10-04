@@ -5,7 +5,7 @@
         <style type="text/css">
             @import url(<?php echo CLIENTROOT; ?>assets/vendor/bootstrap/css/bootstrap.css);
             @import url(<?php echo CLIENTROOT; ?>assets/vendor/bootstrap/css/responsive.css);
-            @import url(<?php echo CLIENTROOT; ?>theme/main.css)
+            @import url(<?php echo CLIENTROOT; ?>theme/backend/main.css)
         </style>
     </head>
     <body>
