@@ -1,0 +1,4 @@
+RewriteEngine on
+RewriteRule ^(.*?)\.htm(l?)$ $1.hgz
+AddEncoding gzip .hgz
+AddType text/html .hgz
