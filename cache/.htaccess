@@ -1,4 +1,5 @@
 RewriteEngine on
+# map over normal html files to .hgz ones with the specific encoding
 RewriteRule ^(.*?)\.htm(l?)$ $1.hgz
 AddEncoding gzip .hgz
 AddType text/html .hgz
