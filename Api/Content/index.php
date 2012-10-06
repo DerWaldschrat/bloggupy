@@ -20,13 +20,16 @@ if (isLoggedin(10)) {
     $cacheBody = null;
     $cacheAction = "update";
     delete(function () {
-        global $shouldUpdateCache, $cacheBody;
+        global $shouldUpdateCache, $cacheBody, $cacheAction;
         $id = $_SERVER["QUERY_STRING"];
         $db = db();
+        // Get permalink for later destruction
+        $st = $db->prepare("SELECT permalink FROM ". CONTENT . " WHERE contentid = ?");
         $st = $db->prepare("DELETE FROM " . CONTENT . " WHERE contentid = ?");
         $st->bind_param("i", $id);
         if (exQuery($st)) {
             $shouldUpdateCache = true;
+            $cacheAction = "destroy";
             $cacheBody = new stdClass();
             $cacheBody->contentid = $id;
         } else {
@@ -44,7 +47,7 @@ if (isLoggedin(10)) {
             $db = db();
             $response = new stdClass();
             $response->created = $response->updated = $body->created = $body->updated = dateForDatabase();
-            $response->author = $body->author = dateForDatabase();
+            $response->author = $body->author = userField("id");
             $st = $db->prepare("INSERT INTO " . CONTENT . " (title, permalink, content, published, created, updated, author) VALUES(?, ?, ?, ?, ?, ?, ?)");
             $st->bind_param("sssssss", $body->title, $body->permalink, $body->content, $body->published, $body->created, $body->updated, $body->author);
             if (exQuery($st)) {
