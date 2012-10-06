@@ -16,9 +16,6 @@ require ROOT . "block/mapper" . PHP;
 require ROOT . "block/validator" . PHP;
 
 if (isLoggedin(10)) {
-    $shouldUpdateCache = false;
-    $cacheBody = null;
-    $cacheAction = "update";
     delete(function () {
         global $shouldUpdateCache, $cacheBody, $cacheAction;
         $id = $_SERVER["QUERY_STRING"];
@@ -28,10 +25,6 @@ if (isLoggedin(10)) {
         $st = $db->prepare("DELETE FROM " . CONTENT . " WHERE contentid = ?");
         $st->bind_param("i", $id);
         if (exQuery($st)) {
-            $shouldUpdateCache = true;
-            $cacheAction = "destroy";
-            $cacheBody = new stdClass();
-            $cacheBody->contentid = $id;
         } else {
             fail("contentDeleteFail");
         }
@@ -41,7 +34,6 @@ if (isLoggedin(10)) {
     });
     // If new entry is created
     post(function () {
-        global $shouldUpdateCache, $cacheBody;
         $body = bodyAsJSON();
         if (hasAllSetIsset($body, array("title", "permalink", "content", "published"))) {
             $db = db();
@@ -53,10 +45,6 @@ if (isLoggedin(10)) {
             if (exQuery($st)) {
                 $response->contentid = $body->contentid = $db->insert_id;
                 hJSON($response);
-                if ($body->published >= 2) {
-                    $shouldUpdateCache = true;
-                    $cacheBody = $body;
-                }
             } else {
                 fail("contentCreateFail");
             }
@@ -78,10 +66,6 @@ if (isLoggedin(10)) {
             $st->bind_param("ssssssi", $body->title, $body->permalink, $body->content, $body->published, $body->updated, $body->author, $body->contentid);
             if (exQuery($st)) {
                 hJSON($response);
-                if ($body->published >= 2) {
-                    $shouldUpdateCache = true;
-                    $cacheBody = $body;
-                }
             } else {
                 fail("contentUpdateFail");
             }
@@ -89,13 +73,6 @@ if (isLoggedin(10)) {
             fail("contentUpdateFail");
         }
     });
-
-    // Should the cache be updated
-    if ($shouldUpdateCache) {
-        require "Cache" . PHP;
-        $cache = new Cache($cacheBody);
-        $cache->perform($cacheAction);
-    }
 }
 
 
